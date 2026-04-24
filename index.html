@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.3 | Advanced Research Architect</title>
+    <title>GamAI v10.4 | Advanced Research Architect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -238,7 +238,7 @@
         </div>
 
         <button onclick="generateResearch()" id="genBtn" class="generate-btn">Generate Research Plan</button>
-        <div id="loading" class="loading">⚙️ Analyzing variables, structuring questions, and drafting framework...</div>
+        <div id="loading" class="loading">⚙️ Analyzing variables, structuring mixed-methods questions, and drafting methodology...</div>
 
         <div class="export-controls" id="export-controls">
             <button class="btn-export btn-word" onclick="exportTable('word')">📄 Export to Word</button>
@@ -333,7 +333,7 @@ async function generateResearch() {
     document.getElementById('export-controls').style.display = "none";
     document.getElementById('genBtn').disabled = true;
 
-    // Upgraded Prompt with strict spacing formatting
+    // Upgraded Prompt with qualitative logic, dynamic phrasing, and detailed procedures
     const promptText = `Act as an Expert Academic Consultant. The current year is 2026. All references MUST be strictly between 2021 and 2026.
     
     Here is the exact setup of the variables:
@@ -347,13 +347,10 @@ async function generateResearch() {
     Locale: ${locale}
     Goal: ${goal}
 
-    CRITICAL FORMATTING INSTRUCTIONS:
+    CRITICAL FORMATTING AND CONTENT INSTRUCTIONS:
     - Provide the output in STRICT JSON format with EXACTLY 5 keys.
-    - Inside the JSON string values, you MUST use heavy HTML formatting to ensure proper spacing and readability.
-    - Wrap distinct concepts in <p> tags. 
-    - Use <ul> and <li> for lists. 
-    - Use <br> to force line breaks. 
-    - Ensure there is ONLY ONE ITEM PER LINE when listing sub-variables, questions, or steps so they do NOT look crowded.
+    - Inside the JSON string values, you MUST use heavy HTML formatting to ensure proper spacing. Wrap distinct concepts in <p> tags, use <ul> and <li> for lists, and <br> for line breaks. Ensure ONE ITEM PER LINE so they do not look crowded.
+    - DYNAMIC PHRASING: Vary your sentence structures and verbs across the text (e.g., use explore, examine, evaluate, investigate, assess, uncover). Do NOT use the exact same template wordings for every generation. Keep the tone academic but fresh.
 
     JSON KEYS REQUIRED:
     1. "3 Proposed Titles": Provide three strong, academic titles. Format as an ordered HTML list (<ol><li>...</li></ol>).
@@ -361,13 +358,18 @@ async function generateResearch() {
     2. "Rationale": Include local and foreign literature, reason to conduct the study, and expected outcomes. Separate these parts clearly using <p> tags.
     
     3. "Research Questions": MUST follow this strict format:
-       Start with a <p> containing the General Statement (e.g., "This study determines the relationship between..."). Follow with "Specifically, it seeks answers to the following questions:"
-       Then use an ordered list. **IMPORTANT:** Create a SEPARATE numbered question to describe EACH IV and EACH DV. For example, if there are 2 IVs, there should be a question describing IV1 using its sub-variables, and another question describing IV2 using its sub-variables. Format the sub-variables using sub-bullets (e.g., 1.1, 1.2) on their own lines. Include questions for significant relationship/difference and a final output/action plan.
+       Start with a <p> containing the General Statement (e.g., "The primary objective of this research is to..."). Follow with "Specifically, it seeks answers to the following questions:"
+       Then use an ordered list.
+       - Create a SEPARATE numbered question to describe EACH IV and EACH DV using their sub-bullets (e.g., 1.1, 1.2) formatted on their own lines.
+       - Include questions for significant relationship/difference.
+       - **QUALITATIVE ADDITION:** Include at least ONE Qualitative research question (as part of a mixed-methods or explanatory design) to explore the lived experiences, perceptions, or the "how" and "why" behind the variables.
+       - End with a final question proposing an output, framework, or action plan based on the findings.
        
     4. "Methodology": Include Research Design and Procedures wrapped in <p> tags. 
-       **CRITICAL for Statistical Tools:** List the specific statistical tool PER RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Afterward, provide step-by-step instructions (using an ordered list) on how to run these specific tests in Jamovi.
+       - **DETAILED PROCEDURES:** Break the procedures down into highly detailed phases (e.g., Phase 1: Pre-implementation and Ethical Clearances, Phase 2: Quantitative Data Gathering, Phase 3: Qualitative Interviews/Focus Groups, Phase 4: Data Integration). 
+       - **STATISTICAL TOOLS:** List the specific statistical tool PER QUANTITATIVE RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Afterward, provide step-by-step instructions on how to run these specific tests in Jamovi from encoding to analysis.
        
-    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). Format using <p> tags with proper spacing.
+    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). Format using <p> tags.
     
     IMPORTANT: Return ONLY a valid JSON object. Do not include markdown like \`\`\`json.`;
 
