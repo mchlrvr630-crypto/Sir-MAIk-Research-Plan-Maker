@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.5 | Advanced Research Architect</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>GamAI v10.6 | Advanced Research Architect</title>
 
     <style>
         /* Clean Blue and White Palette */
@@ -157,11 +154,9 @@
         .generate-btn:hover { background: var(--accent); }
         .generate-btn:disabled { background: #ccc; cursor: not-allowed; color: #666; box-shadow: none;}
         
-        .export-controls { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn-export { color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;}
+        .export-controls { display: none; margin-top: 20px; }
+        .btn-export { width: 100%; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1.1rem;}
         .btn-word { background: #2b579a; } .btn-word:hover { background: #1e3e6e; }
-        .btn-pdf { background: #d9534f; } .btn-pdf:hover { background: #c9302c; }
-        .btn-excel { background: #217346; } .btn-excel:hover { background: #175232; }
 
         /* Output Table Formatting */
         #output-area { margin-top: 35px; display: none; }
@@ -185,6 +180,8 @@
         .ai-content ul, .ai-content ol { margin-top: 0; margin-bottom: 15px; padding-left: 25px; }
         .ai-content li { margin-bottom: 8px; }
         .ai-content strong { color: var(--primary); }
+        .ai-content a { color: var(--accent); text-decoration: none; }
+        .ai-content a:hover { text-decoration: underline; }
 
         .loading { text-align: center; display: none; padding: 20px; font-weight: bold; color: var(--accent); font-size: 1.1rem; }
     </style>
@@ -241,9 +238,7 @@
         <div id="loading" class="loading">⚙️ Analyzing variables, structuring mixed-methods questions, and drafting methodology...</div>
 
         <div class="export-controls" id="export-controls">
-            <button class="btn-export btn-word" onclick="exportTable('word')">📄 Export to Word</button>
-            <button class="btn-export btn-pdf" onclick="exportTable('pdf')">📕 Export to PDF</button>
-            <button class="btn-export btn-excel" onclick="exportTable('excel')">📊 Export to Excel</button>
+            <button class="btn-export btn-word" onclick="exportTable()">📄 Export Formatted Word Document (.doc)</button>
         </div>
 
         <div id="output-area">
@@ -354,7 +349,7 @@ async function generateResearch() {
     2. "Rationale": Include local and foreign literature, reason to conduct the study, and expected outcomes. Separate these parts clearly using <p> tags.
     3. "Research Questions": Start with a <p> General Statement. Then use an ordered list. Create a SEPARATE numbered question to describe EACH IV and EACH DV using their sub-bullets (e.g., 1.1, 1.2) on their own lines. Include questions for significant relationship/difference. Include at least ONE Qualitative research question. End with a final question proposing an output/action plan.
     4. "Methodology": Include Research Design and Detailed Procedures (Phase 1, Phase 2, etc.) wrapped in <p> tags. List the specific statistical tool PER QUANTITATIVE RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Provide step-by-step instructions on how to run these specific tests in Jamovi from encoding to analysis.
-    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). Format using <p> tags.
+    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). **CRITICAL INSTRUCTION:** ONLY provide references that have a valid, accessible URL or DOI link. You must include the URL or DOI at the end of every citation. Make the links clickable by wrapping them in HTML <a> tags. Format each reference using <p> tags.
     
     IMPORTANT: Return ONLY a valid JSON object. Do not include markdown like \`\`\`json.`;
 
@@ -403,85 +398,47 @@ function renderTable(dataObj) {
     }
     
     document.getElementById('output-area').style.display = "block";
-    document.getElementById('export-controls').style.display = "grid";
+    document.getElementById('export-controls').style.display = "block"; // Show Word button
 }
 
-// --- Polished Export Functions ---
-function exportTable(type) {
+// --- Polished Export Function (Word Only) ---
+function exportTable() {
     const originalTable = document.getElementById("research-table");
     
     // Create a pristine, un-styled clone for formatting
     const cloneTable = originalTable.cloneNode(true);
     
-    if (type === 'excel') {
-        // Excel handles basic tables best. SheetJS will automatically parse formatting.
-        const wb = XLSX.utils.table_to_book(cloneTable, {sheet: "Research Plan"});
-        XLSX.writeFile(wb, "Research_Plan.xlsx");
-    } 
-    else if (type === 'pdf') {
-        // Wrapper for PDF to add Title and clean styles
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = `
-            <h1 style="text-align: center; font-family: Arial; color: #004a99; margin-bottom: 20px;">GamAI Research Plan</h1>
-        `;
-        
-        // Ensure table styling is optimized for print
-        cloneTable.style.width = "100%";
-        cloneTable.style.borderCollapse = "collapse";
-        cloneTable.style.fontFamily = "Arial, sans-serif";
-        cloneTable.querySelectorAll("th, td").forEach(cell => {
-            cell.style.border = "1px solid #ccc";
-            cell.style.padding = "12px";
-            if(cell.tagName === "TH") {
-                cell.style.backgroundColor = "#004a99";
-                cell.style.color = "white";
-            }
-        });
-        
-        wrapper.appendChild(cloneTable);
-
-        const opt = {
-            margin:       0.75, // Professional 0.75 inch margins
-            filename:     'Research_Plan.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'], avoid: 'tr' } // Prevents rows splitting across pages
-        };
-        html2pdf().set(opt).from(wrapper).save();
-    }
-    else if (type === 'word') {
-        // Inject strictly formatted Microsoft Word CSS and Title Header
-        const header = `
-            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-            <head>
-                <meta charset='utf-8'>
-                <title>Export HTML To Doc</title>
-                <style>
-                    body { font-family: 'Calibri', Arial, sans-serif; }
-                    h1 { text-align: center; color: #004a99; font-size: 24pt; margin-bottom: 20px; }
-                    table { border-collapse: collapse; width: 100%; }
-                    th, td { border: 1pt solid #000000; padding: 8pt; vertical-align: top; }
-                    th { background-color: #004a99; color: #ffffff; font-weight: bold; text-align: left; }
-                    td { font-size: 11pt; line-height: 1.5; }
-                    p, ul, ol { margin-top: 0; margin-bottom: 10pt; }
-                </style>
-            </head>
-            <body>
-                <h1>Research Plan</h1>
-        `;
-        const footer = "</body></html>";
-        const html = header + cloneTable.outerHTML + footer;
-        
-        const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'Research_Plan.doc';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    // Inject strictly formatted Microsoft Word CSS and Title Header
+    const header = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <title>Export HTML To Doc</title>
+            <style>
+                body { font-family: 'Calibri', Arial, sans-serif; }
+                h1 { text-align: center; color: #004a99; font-size: 24pt; margin-bottom: 20px; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1pt solid #000000; padding: 8pt; vertical-align: top; }
+                th { background-color: #004a99; color: #ffffff; font-weight: bold; text-align: left; }
+                td { font-size: 11pt; line-height: 1.5; }
+                p, ul, ol { margin-top: 0; margin-bottom: 10pt; }
+                a { color: #0066cc; text-decoration: underline; }
+            </style>
+        </head>
+        <body>
+            <h1>Research Plan</h1>
+    `;
+    const footer = "</body></html>";
+    const html = header + cloneTable.outerHTML + footer;
+    
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Research_Plan.doc';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // --- History Logic ---
