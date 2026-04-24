@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.4 | Advanced Research Architect</title>
+    <title>GamAI v10.5 | Advanced Research Architect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -158,7 +158,7 @@
         .generate-btn:disabled { background: #ccc; cursor: not-allowed; color: #666; box-shadow: none;}
         
         .export-controls { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn-export { color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-export { color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;}
         .btn-word { background: #2b579a; } .btn-word:hover { background: #1e3e6e; }
         .btn-pdf { background: #d9534f; } .btn-pdf:hover { background: #c9302c; }
         .btn-excel { background: #217346; } .btn-excel:hover { background: #175232; }
@@ -300,7 +300,6 @@ function extractVariables(type) {
     return result.join('\n');
 }
 
-// Create a short title for History based on first variables
 function getHistoryTitle() {
     const firstIV = document.querySelector('.iv-name').value.trim() || 'IV';
     const firstDV = document.querySelector('.dv-name').value.trim() || 'DV';
@@ -327,13 +326,11 @@ async function generateResearch() {
         return;
     }
     
-    // UI states
     document.getElementById('loading').style.display = "block";
     document.getElementById('output-area').style.display = "none";
     document.getElementById('export-controls').style.display = "none";
     document.getElementById('genBtn').disabled = true;
 
-    // Upgraded Prompt with qualitative logic, dynamic phrasing, and detailed procedures
     const promptText = `Act as an Expert Academic Consultant. The current year is 2026. All references MUST be strictly between 2021 and 2026.
     
     Here is the exact setup of the variables:
@@ -350,25 +347,13 @@ async function generateResearch() {
     CRITICAL FORMATTING AND CONTENT INSTRUCTIONS:
     - Provide the output in STRICT JSON format with EXACTLY 5 keys.
     - Inside the JSON string values, you MUST use heavy HTML formatting to ensure proper spacing. Wrap distinct concepts in <p> tags, use <ul> and <li> for lists, and <br> for line breaks. Ensure ONE ITEM PER LINE so they do not look crowded.
-    - DYNAMIC PHRASING: Vary your sentence structures and verbs across the text (e.g., use explore, examine, evaluate, investigate, assess, uncover). Do NOT use the exact same template wordings for every generation. Keep the tone academic but fresh.
+    - DYNAMIC PHRASING: Vary your sentence structures and verbs across the text (e.g., use explore, examine, evaluate, investigate, assess, uncover).
 
     JSON KEYS REQUIRED:
     1. "3 Proposed Titles": Provide three strong, academic titles. Format as an ordered HTML list (<ol><li>...</li></ol>).
-    
     2. "Rationale": Include local and foreign literature, reason to conduct the study, and expected outcomes. Separate these parts clearly using <p> tags.
-    
-    3. "Research Questions": MUST follow this strict format:
-       Start with a <p> containing the General Statement (e.g., "The primary objective of this research is to..."). Follow with "Specifically, it seeks answers to the following questions:"
-       Then use an ordered list.
-       - Create a SEPARATE numbered question to describe EACH IV and EACH DV using their sub-bullets (e.g., 1.1, 1.2) formatted on their own lines.
-       - Include questions for significant relationship/difference.
-       - **QUALITATIVE ADDITION:** Include at least ONE Qualitative research question (as part of a mixed-methods or explanatory design) to explore the lived experiences, perceptions, or the "how" and "why" behind the variables.
-       - End with a final question proposing an output, framework, or action plan based on the findings.
-       
-    4. "Methodology": Include Research Design and Procedures wrapped in <p> tags. 
-       - **DETAILED PROCEDURES:** Break the procedures down into highly detailed phases (e.g., Phase 1: Pre-implementation and Ethical Clearances, Phase 2: Quantitative Data Gathering, Phase 3: Qualitative Interviews/Focus Groups, Phase 4: Data Integration). 
-       - **STATISTICAL TOOLS:** List the specific statistical tool PER QUANTITATIVE RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Afterward, provide step-by-step instructions on how to run these specific tests in Jamovi from encoding to analysis.
-       
+    3. "Research Questions": Start with a <p> General Statement. Then use an ordered list. Create a SEPARATE numbered question to describe EACH IV and EACH DV using their sub-bullets (e.g., 1.1, 1.2) on their own lines. Include questions for significant relationship/difference. Include at least ONE Qualitative research question. End with a final question proposing an output/action plan.
+    4. "Methodology": Include Research Design and Detailed Procedures (Phase 1, Phase 2, etc.) wrapped in <p> tags. List the specific statistical tool PER QUANTITATIVE RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Provide step-by-step instructions on how to run these specific tests in Jamovi from encoding to analysis.
     5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). Format using <p> tags.
     
     IMPORTANT: Return ONLY a valid JSON object. Do not include markdown like \`\`\`json.`;
@@ -386,7 +371,6 @@ async function generateResearch() {
         });
         
         const data = await response.json();
-        
         if(data.error) throw new Error(data.error.message);
 
         let aiText = data.candidates[0].content.parts[0].text;
@@ -422,34 +406,78 @@ function renderTable(dataObj) {
     document.getElementById('export-controls').style.display = "grid";
 }
 
-// --- Export Functions ---
+// --- Polished Export Functions ---
 function exportTable(type) {
-    const table = document.getElementById("research-table");
+    const originalTable = document.getElementById("research-table");
+    
+    // Create a pristine, un-styled clone for formatting
+    const cloneTable = originalTable.cloneNode(true);
     
     if (type === 'excel') {
-        const wb = XLSX.utils.table_to_book(table, {sheet: "Research Plan"});
-        XLSX.writeFile(wb, "Research_Architect_Plan.xlsx");
+        // Excel handles basic tables best. SheetJS will automatically parse formatting.
+        const wb = XLSX.utils.table_to_book(cloneTable, {sheet: "Research Plan"});
+        XLSX.writeFile(wb, "Research_Plan.xlsx");
     } 
     else if (type === 'pdf') {
+        // Wrapper for PDF to add Title and clean styles
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <h1 style="text-align: center; font-family: Arial; color: #004a99; margin-bottom: 20px;">GamAI Research Plan</h1>
+        `;
+        
+        // Ensure table styling is optimized for print
+        cloneTable.style.width = "100%";
+        cloneTable.style.borderCollapse = "collapse";
+        cloneTable.style.fontFamily = "Arial, sans-serif";
+        cloneTable.querySelectorAll("th, td").forEach(cell => {
+            cell.style.border = "1px solid #ccc";
+            cell.style.padding = "12px";
+            if(cell.tagName === "TH") {
+                cell.style.backgroundColor = "#004a99";
+                cell.style.color = "white";
+            }
+        });
+        
+        wrapper.appendChild(cloneTable);
+
         const opt = {
-            margin:       0.5,
-            filename:     'Research_Architect_Plan.pdf',
+            margin:       0.75, // Professional 0.75 inch margins
+            filename:     'Research_Plan.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'], avoid: 'tr' } // Prevents rows splitting across pages
         };
-        html2pdf().set(opt).from(table).save();
+        html2pdf().set(opt).from(wrapper).save();
     }
     else if (type === 'word') {
-        const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+        // Inject strictly formatted Microsoft Word CSS and Title Header
+        const header = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>Export HTML To Doc</title>
+                <style>
+                    body { font-family: 'Calibri', Arial, sans-serif; }
+                    h1 { text-align: center; color: #004a99; font-size: 24pt; margin-bottom: 20px; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1pt solid #000000; padding: 8pt; vertical-align: top; }
+                    th { background-color: #004a99; color: #ffffff; font-weight: bold; text-align: left; }
+                    td { font-size: 11pt; line-height: 1.5; }
+                    p, ul, ol { margin-top: 0; margin-bottom: 10pt; }
+                </style>
+            </head>
+            <body>
+                <h1>Research Plan</h1>
+        `;
         const footer = "</body></html>";
-        const html = header + table.outerHTML + footer;
+        const html = header + cloneTable.outerHTML + footer;
         
         const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Research_Architect_Plan.doc';
+        link.download = 'Research_Plan.doc';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -459,17 +487,9 @@ function exportTable(type) {
 // --- History Logic ---
 function saveToHistory(title, jsonData) {
     let history = JSON.parse(localStorage.getItem("gamai_history")) || [];
-    
-    const newItem = {
-        id: Date.now(),
-        title: title || "Untitled Study",
-        date: new Date().toLocaleString(),
-        data: jsonData
-    };
-    
+    const newItem = { id: Date.now(), title: title || "Untitled Study", date: new Date().toLocaleString(), data: jsonData };
     history.unshift(newItem);
     if (history.length > 5) history.pop();
-    
     localStorage.setItem("gamai_history", JSON.stringify(history));
     loadHistory();
 }
@@ -478,12 +498,10 @@ function loadHistory() {
     const history = JSON.parse(localStorage.getItem("gamai_history")) || [];
     const list = document.getElementById('history-list');
     list.innerHTML = "";
-    
     if(history.length === 0) {
         list.innerHTML = "<p style='color:var(--text-muted); font-size:0.9rem;'>No history yet.</p>";
         return;
     }
-
     history.forEach(item => {
         const div = document.createElement('div');
         div.className = 'history-item';
