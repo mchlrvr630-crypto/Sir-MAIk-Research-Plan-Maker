@@ -3,33 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.2 | Advanced Research Architect</title>
+    <title>GamAI v10.3 | Advanced Research Architect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* Dark Blue Palette */
+        /* Clean Blue and White Palette */
         :root { 
-            --bg-dark: #071324; 
-            --bg-panel: #0f2545; 
-            --primary: #1e4b8f; 
-            --accent: #4da3ff; 
-            --text-main: #e6f1ff;
-            --text-muted: #a3c2eb;
-            --border: #213c69;
-            --btn-add: #2b7a4b;
-            --btn-del: #963535;
+            --bg-page: #f4f7fa; 
+            --bg-panel: #ffffff; 
+            --primary: #004a99; 
+            --primary-light: #e6f0fa;
+            --accent: #0066cc; 
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #d1dbe8;
+            --btn-add: #28a745;
+            --btn-del: #dc3545;
         }
 
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: var(--bg-dark); 
+            background: var(--bg-page); 
             padding: 20px; 
             color: var(--text-main); 
             display: flex; 
             gap: 20px; 
             justify-content: center; 
+            line-height: 1.5;
         }
         
         /* Main Container */
@@ -38,14 +40,14 @@
             max-width: 950px; 
             background: var(--bg-panel); 
             border-radius: 12px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-            border-top: 5px solid var(--accent); 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); 
+            border-top: 6px solid var(--primary); 
             padding-bottom: 30px; 
         }
         
-        .header { padding: 25px; text-align: center; border-bottom: 1px solid var(--border); }
-        .header h1 { margin: 0; color: var(--accent); }
-        .header p { color: var(--text-muted); margin-top: 5px; }
+        .header { padding: 25px; text-align: center; border-bottom: 1px solid var(--border); background: var(--bg-panel); border-radius: 12px 12px 0 0; }
+        .header h1 { margin: 0; color: var(--primary); font-weight: 800; }
+        .header p { color: var(--text-muted); margin-top: 5px; font-size: 1.05rem; }
         
         .content { padding: 30px; }
         
@@ -54,60 +56,73 @@
             width: 300px; 
             background: var(--bg-panel); 
             border-radius: 12px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08); 
             padding: 20px; 
             height: fit-content; 
-            border-top: 5px solid var(--primary); 
+            border-top: 6px solid var(--accent); 
         }
-        .history-sidebar h3 { color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top: 0; }
+        .history-sidebar h3 { color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; margin-top: 0; }
         .history-item { 
-            background: var(--bg-dark); 
+            background: var(--bg-page); 
             border: 1px solid var(--border); 
-            padding: 10px; 
+            padding: 12px; 
             margin-bottom: 10px; 
             border-radius: 6px; 
             cursor: pointer; 
-            font-size: 0.85rem; 
+            font-size: 0.9rem; 
             transition: 0.2s; 
             color: var(--text-main);
         }
-        .history-item:hover { border-color: var(--accent); background: var(--primary); }
-        .clear-btn { background: var(--btn-del); padding: 10px; margin-top: 10px; font-size: 0.9rem; }
-        .clear-btn:hover { background: #7a2626; }
+        .history-item:hover { border-color: var(--accent); background: var(--primary-light); }
+        .clear-btn { background: var(--btn-del); color: white; padding: 10px; margin-top: 10px; font-size: 0.9rem; border: none; border-radius: 6px; width: 100%; cursor: pointer; }
+        .clear-btn:hover { background: #b02a37; }
 
         /* Form Elements */
         .section-title { 
             font-weight: bold; 
-            color: var(--accent); 
-            border-bottom: 2px solid var(--primary); 
+            color: var(--primary); 
+            border-bottom: 3px solid var(--primary-light); 
             display: inline-block; 
-            margin-bottom: 15px; 
+            margin-bottom: 20px; 
             text-transform: uppercase; 
-            margin-top: 20px; 
+            margin-top: 25px; 
+            font-size: 1.1rem;
         }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .input-box { display: flex; flex-direction: column; }
         .full { grid-column: span 2; }
         
-        label { font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        label { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-main); }
         
-        /* Dynamic Inputs */
-        .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        /* Dynamic Variable Group Styling */
+        .variable-group {
+            display: flex;
+            gap: 10px;
+            background: var(--primary-light);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
         input, select, textarea { 
             flex: 1;
             padding: 12px; 
             border: 1px solid var(--border); 
-            background: var(--bg-dark);
+            background: #fff;
             color: var(--text-main);
             border-radius: 6px; 
             font-size: 1rem; 
         }
-        input::placeholder, textarea::placeholder { color: #5a739c; }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+        input::placeholder, textarea::placeholder { color: #999; }
+        input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1); }
         
         .icon-btn { 
             width: 45px; 
+            height: 45px;
             padding: 0; 
             display: flex; 
             align-items: center; 
@@ -116,48 +131,61 @@
             border-radius: 6px; 
             flex-shrink: 0; 
             font-weight: bold;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
-        .add-btn { background: var(--btn-add); } .add-btn:hover { background: #1f6139; }
-        .remove-btn { background: var(--btn-del); } .remove-btn:hover { background: #7a2626; }
+        .add-btn { background: var(--btn-add); margin-bottom: 15px; width: auto; padding: 0 15px; font-size: 1rem; height: 40px; } 
+        .add-btn:hover { background: #218838; }
+        .remove-btn { background: var(--btn-del); } .remove-btn:hover { background: #c82333; }
 
         /* Buttons */
-        button { 
+        .generate-btn { 
             width: 100%; 
-            padding: 15px; 
+            padding: 18px; 
             background: var(--primary); 
             color: white; 
             border: none; 
             border-radius: 8px; 
-            font-size: 1.05rem; 
+            font-size: 1.1rem; 
             font-weight: bold; 
             cursor: pointer; 
             transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(0, 74, 153, 0.2);
+            margin-top: 10px;
         }
-        button:hover { background: var(--accent); color: #000; }
-        button:disabled { background: #333; cursor: not-allowed; color: #777; }
+        .generate-btn:hover { background: var(--accent); }
+        .generate-btn:disabled { background: #ccc; cursor: not-allowed; color: #666; box-shadow: none;}
         
         .export-controls { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn-pdf { background: #c23e3e; } .btn-pdf:hover { background: #a12f2f; color: white;}
-        .btn-word { background: #2b579a; } .btn-word:hover { background: #1e3e6e; color: white;}
-        .btn-excel { background: #217346; } .btn-excel:hover { background: #175232; color: white;}
+        .btn-export { color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-word { background: #2b579a; } .btn-word:hover { background: #1e3e6e; }
+        .btn-pdf { background: #d9534f; } .btn-pdf:hover { background: #c9302c; }
+        .btn-excel { background: #217346; } .btn-excel:hover { background: #175232; }
 
-        /* Output Table */
-        #output-area { margin-top: 30px; display: none; }
+        /* Output Table Formatting */
+        #output-area { margin-top: 35px; display: none; }
         .styled-table { 
             border-collapse: collapse; 
-            margin: 25px 0; 
-            font-size: 0.95em; 
+            margin: 20px 0; 
+            font-size: 1rem; 
             width: 100%; 
-            background: var(--bg-dark);
+            background: var(--bg-panel);
             border-radius: 8px; 
             overflow: hidden; 
             border: 1px solid var(--border);
         }
         .styled-table thead tr { background-color: var(--primary); color: #ffffff; text-align: left; }
-        .styled-table th, .styled-table td { padding: 15px 20px; vertical-align: top; border-bottom: 1px solid var(--border); }
-        .styled-table tbody tr:nth-of-type(even) { background-color: rgba(255,255,255,0.02); }
-        .styled-table tbody td:first-child { font-weight: bold; width: 20%; color: var(--accent); }
+        .styled-table th, .styled-table td { padding: 20px; vertical-align: top; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-of-type(even) { background-color: var(--bg-page); }
+        .styled-table tbody td:first-child { font-weight: bold; width: 22%; color: var(--primary); font-size: 1.05rem;}
         
+        /* AI Content Formatting */
+        .ai-content p { margin-top: 0; margin-bottom: 15px; }
+        .ai-content ul, .ai-content ol { margin-top: 0; margin-bottom: 15px; padding-left: 25px; }
+        .ai-content li { margin-bottom: 8px; }
+        .ai-content strong { color: var(--primary); }
+
         .loading { text-align: center; display: none; padding: 20px; font-weight: bold; color: var(--accent); font-size: 1.1rem; }
     </style>
 </head>
@@ -170,45 +198,31 @@
     </div>
 
     <div class="content">
-        <div class="section-title">I. Study Parameters</div>
+        <div class="section-title">I. Study Parameters (Variables)</div>
         <div class="grid">
             
             <div class="input-box" id="iv-container">
-                <label>Independent Variable (IV)</label>
-                <div class="input-row">
-                    <input type="text" class="iv-input" placeholder="e.g., Financial Literacy">
-                    <button type="button" class="icon-btn add-btn" onclick="addInput('iv-container', 'iv-input')">+</button>
+                <label>Independent Variables (IV) & Their Indicators</label>
+                <div class="variable-group">
+                    <input type="text" class="iv-name" placeholder="IV Name (e.g., Financial Literacy)">
+                    <input type="text" class="iv-indicators" placeholder="Sub-variables (e.g., Budgeting, Saving)">
                 </div>
             </div>
+            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('iv-container', 'iv')">➕ Add Another IV</button>
 
-            <div class="input-box" id="dv-container">
-                <label>Dependent Variable (DV)</label>
-                <div class="input-row">
-                    <input type="text" class="dv-input" placeholder="e.g., Investment Behavior">
-                    <button type="button" class="icon-btn add-btn" onclick="addInput('dv-container', 'dv-input')">+</button>
+            <div class="input-box" id="dv-container" style="margin-top: 15px;">
+                <label>Dependent Variables (DV) & Their Indicators</label>
+                <div class="variable-group">
+                    <input type="text" class="dv-name" placeholder="DV Name (e.g., Investment Behavior)">
+                    <input type="text" class="dv-indicators" placeholder="Sub-variables (e.g., Risk Tolerance, Diversification)">
                 </div>
             </div>
-
-            <div class="input-box" id="ivsub-container">
-                <label>IV Indicators (Sub-variables)</label>
-                <div class="input-row">
-                    <input type="text" class="ivsub-input" placeholder="e.g., Budgeting, Saving">
-                    <button type="button" class="icon-btn add-btn" onclick="addInput('ivsub-container', 'ivsub-input')">+</button>
-                </div>
-            </div>
-
-            <div class="input-box" id="dvsub-container">
-                <label>DV Indicators (Sub-variables)</label>
-                <div class="input-row">
-                    <input type="text" class="dvsub-input" placeholder="e.g., Risk Tolerance">
-                    <button type="button" class="icon-btn add-btn" onclick="addInput('dvsub-container', 'dvsub-input')">+</button>
-                </div>
-            </div>
+            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('dv-container', 'dv')">➕ Add Another DV</button>
 
         </div>
 
         <div class="section-title">II. Contextual Design</div>
-        <div class="grid">
+        <div class="grid-2">
             <div class="input-box">
                 <label>Target Respondents</label>
                 <input type="text" id="respondents" placeholder="e.g., Public School Teachers">
@@ -223,13 +237,13 @@
             </div>
         </div>
 
-        <button onclick="generateResearch()" id="genBtn">Generate Research Plan</button>
-        <div id="loading" class="loading">⚙️ Analyzing parameters and drafting frameworks...</div>
+        <button onclick="generateResearch()" id="genBtn" class="generate-btn">Generate Research Plan</button>
+        <div id="loading" class="loading">⚙️ Analyzing variables, structuring questions, and drafting framework...</div>
 
         <div class="export-controls" id="export-controls">
-            <button class="btn-word" onclick="exportTable('word')">📄 Export to Word</button>
-            <button class="btn-pdf" onclick="exportTable('pdf')">📕 Export to PDF</button>
-            <button class="btn-excel" onclick="exportTable('excel')">📊 Export to Excel</button>
+            <button class="btn-export btn-word" onclick="exportTable('word')">📄 Export to Word</button>
+            <button class="btn-export btn-pdf" onclick="exportTable('pdf')">📕 Export to PDF</button>
+            <button class="btn-export btn-excel" onclick="exportTable('excel')">📊 Export to Excel</button>
         </div>
 
         <div id="output-area">
@@ -257,26 +271,40 @@
 // --- Initialization ---
 document.addEventListener("DOMContentLoaded", loadHistory);
 
-// --- Dynamic Input Logic ---
-function addInput(containerId, inputClass) {
+// --- Dynamic Variable Group Logic ---
+function addVariableGroup(containerId, type) {
     const container = document.getElementById(containerId);
     const newRow = document.createElement('div');
-    newRow.className = 'input-row';
+    newRow.className = 'variable-group';
     newRow.innerHTML = `
-        <input type="text" class="${inputClass}" placeholder="Add another...">
+        <input type="text" class="${type}-name" placeholder="${type.toUpperCase()} Name">
+        <input type="text" class="${type}-indicators" placeholder="Sub-variables (comma separated)">
         <button type="button" class="icon-btn remove-btn" onclick="this.parentElement.remove()">-</button>
     `;
     container.appendChild(newRow);
 }
 
-// Helper to get all values from dynamic inputs as a comma-separated string
-function getCombinedValues(className) {
-    const inputs = document.querySelectorAll('.' + className);
-    let values = [];
-    inputs.forEach(input => {
-        if(input.value.trim() !== '') values.push(input.value.trim());
-    });
-    return values.join(', ');
+// Extract paired Variable Names and Indicators
+function extractVariables(type) {
+    const names = document.querySelectorAll(`.${type}-name`);
+    const indicators = document.querySelectorAll(`.${type}-indicators`);
+    let result = [];
+    
+    for(let i = 0; i < names.length; i++) {
+        const nameVal = names[i].value.trim();
+        const indVal = indicators[i].value.trim();
+        if(nameVal !== '') {
+            result.push(`Variable Name: ${nameVal} | Sub-variables/Indicators: ${indVal || 'None specified'}`);
+        }
+    }
+    return result.join('\n');
+}
+
+// Create a short title for History based on first variables
+function getHistoryTitle() {
+    const firstIV = document.querySelector('.iv-name').value.trim() || 'IV';
+    const firstDV = document.querySelector('.dv-name').value.trim() || 'DV';
+    return `${firstIV} vs ${firstDV}`;
 }
 
 // --- Core Generation Logic ---
@@ -288,19 +316,14 @@ async function generateResearch() {
         else return;
     }
 
-    // Grab dynamic values
-    const iv = getCombinedValues('iv-input');
-    const dv = getCombinedValues('dv-input');
-    const ivSub = getCombinedValues('ivsub-input');
-    const dvSub = getCombinedValues('dvsub-input');
-    
-    // Grab static values
+    const ivData = extractVariables('iv');
+    const dvData = extractVariables('dv');
     const respondents = document.getElementById('respondents').value;
     const locale = document.getElementById('locale').value;
     const goal = document.getElementById('goal').value;
 
-    if(!iv || !dv) {
-        alert("Please provide at least one Independent and Dependent Variable.");
+    if(!ivData || !dvData) {
+        alert("Please provide at least one Independent and one Dependent Variable.");
         return;
     }
     
@@ -310,26 +333,43 @@ async function generateResearch() {
     document.getElementById('export-controls').style.display = "none";
     document.getElementById('genBtn').disabled = true;
 
-    const promptText = `Act as an Expert Academic Consultant.
-    The current year is 2026. All references MUST be strictly between 2021 and 2026.
+    // Upgraded Prompt with strict spacing formatting
+    const promptText = `Act as an Expert Academic Consultant. The current year is 2026. All references MUST be strictly between 2021 and 2026.
     
-    IV(s): ${iv} (Indicators: ${ivSub})
-    DV(s): ${dv} (Indicators: ${dvSub})
+    Here is the exact setup of the variables:
+    INDEPENDENT VARIABLES (IVs):
+    ${ivData}
+
+    DEPENDENT VARIABLES (DVs):
+    ${dvData}
+
     Respondents: ${respondents}
     Locale: ${locale}
     Goal: ${goal}
 
-    Provide the output in STRICT JSON format with EXACTLY the following 5 keys. Format the string values with basic HTML (like <br>, <strong>, <ul>) for readability inside a table:
-    1. "3 Proposed Titles": Provide three strong, academic titles.
-    2. "Rationale": Include local and foreign literature, the reason it is a must to conduct the study, and expected outcomes.
-    3. "Research Questions": MUST follow this strict format:
-       Start with a General Statement describing the study's overall purpose, variables, respondents, and locale (e.g., "This study determines the relationship between..."). Follow with "Specifically, it seeks answers to the following questions:". 
-       Create numbered specific questions. For questions asking to describe the IV and DV, use sub-bullets (e.g., 1.1, 1.2) populated by the specific indicators provided (${ivSub} and ${dvSub}). Include questions for significant relationship/difference and an output (e.g., action plan or framework).
-    4. "Methodology": Include Research Design and Procedures. 
-       **CRITICAL for Statistical Tools:** You MUST list the specific statistical tool PER RESEARCH QUESTION (e.g., "<strong>RQ1:</strong> Mean and Standard Deviation. <strong>RQ2:</strong> Pearson r"). Afterward, provide step-by-step instructions on how to run these specific tests in Jamovi.
-    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026).
+    CRITICAL FORMATTING INSTRUCTIONS:
+    - Provide the output in STRICT JSON format with EXACTLY 5 keys.
+    - Inside the JSON string values, you MUST use heavy HTML formatting to ensure proper spacing and readability.
+    - Wrap distinct concepts in <p> tags. 
+    - Use <ul> and <li> for lists. 
+    - Use <br> to force line breaks. 
+    - Ensure there is ONLY ONE ITEM PER LINE when listing sub-variables, questions, or steps so they do NOT look crowded.
+
+    JSON KEYS REQUIRED:
+    1. "3 Proposed Titles": Provide three strong, academic titles. Format as an ordered HTML list (<ol><li>...</li></ol>).
     
-    IMPORTANT: Return ONLY a valid JSON object. Do not include markdown codeblocks like \`\`\`json.`;
+    2. "Rationale": Include local and foreign literature, reason to conduct the study, and expected outcomes. Separate these parts clearly using <p> tags.
+    
+    3. "Research Questions": MUST follow this strict format:
+       Start with a <p> containing the General Statement (e.g., "This study determines the relationship between..."). Follow with "Specifically, it seeks answers to the following questions:"
+       Then use an ordered list. **IMPORTANT:** Create a SEPARATE numbered question to describe EACH IV and EACH DV. For example, if there are 2 IVs, there should be a question describing IV1 using its sub-variables, and another question describing IV2 using its sub-variables. Format the sub-variables using sub-bullets (e.g., 1.1, 1.2) on their own lines. Include questions for significant relationship/difference and a final output/action plan.
+       
+    4. "Methodology": Include Research Design and Procedures wrapped in <p> tags. 
+       **CRITICAL for Statistical Tools:** List the specific statistical tool PER RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Afterward, provide step-by-step instructions (using an ordered list) on how to run these specific tests in Jamovi.
+       
+    5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). Format using <p> tags with proper spacing.
+    
+    IMPORTANT: Return ONLY a valid JSON object. Do not include markdown like \`\`\`json.`;
 
     try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
@@ -345,23 +385,18 @@ async function generateResearch() {
         
         const data = await response.json();
         
-        // Catch API-level errors (like invalid API key)
         if(data.error) throw new Error(data.error.message);
 
-        // Clean the AI response to ensure it parses correctly even if the AI disobeys the "no markdown" rule
         let aiText = data.candidates[0].content.parts[0].text;
         aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
 
         const aiResponseJSON = JSON.parse(aiText);
         renderTable(aiResponseJSON);
-        saveToHistory(`${iv} vs ${dv}`, aiResponseJSON);
+        saveToHistory(getHistoryTitle(), aiResponseJSON);
 
     } catch (err) {
-        alert("Generation Error: " + err.message + "\n\nIf it says API key not valid, click OK, clear your history, or reset the app to enter a new key.");
-        // Optional: clear bad key if error is 400 API key not valid
-        if(err.message.includes("API key")) {
-            localStorage.removeItem("gamai_key");
-        }
+        alert("Generation Error: " + err.message + "\n\nTry clearing your history or verifying your API key.");
+        if(err.message.includes("API key")) localStorage.removeItem("gamai_key");
     } finally {
         document.getElementById('loading').style.display = "none";
         document.getElementById('genBtn').disabled = false;
@@ -376,7 +411,7 @@ function renderTable(dataObj) {
     for (const [task, answer] of Object.entries(dataObj)) {
         const row = `<tr>
             <td>${task}</td>
-            <td>${answer}</td>
+            <td class="ai-content">${answer}</td>
         </tr>`;
         tbody.innerHTML += row;
     }
@@ -389,17 +424,8 @@ function renderTable(dataObj) {
 function exportTable(type) {
     const table = document.getElementById("research-table");
     
-    // Create a clone of the table to force light colors for export so it's readable on paper
-    const cloneTable = table.cloneNode(true);
-    cloneTable.style.backgroundColor = "white";
-    cloneTable.style.color = "black";
-    cloneTable.querySelectorAll("td, th").forEach(cell => {
-        cell.style.borderColor = "#ddd";
-        if(cell.tagName === "TH") { cell.style.backgroundColor = "#1e4b8f"; cell.style.color = "white"; }
-    });
-
     if (type === 'excel') {
-        const wb = XLSX.utils.table_to_book(cloneTable, {sheet: "Research Plan"});
+        const wb = XLSX.utils.table_to_book(table, {sheet: "Research Plan"});
         XLSX.writeFile(wb, "Research_Architect_Plan.xlsx");
     } 
     else if (type === 'pdf') {
@@ -407,15 +433,15 @@ function exportTable(type) {
             margin:       0.5,
             filename:     'Research_Architect_Plan.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, backgroundColor: "#ffffff" },
+            html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(cloneTable).save();
+        html2pdf().set(opt).from(table).save();
     }
     else if (type === 'word') {
         const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
         const footer = "</body></html>";
-        const html = header + cloneTable.outerHTML + footer;
+        const html = header + table.outerHTML + footer;
         
         const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
