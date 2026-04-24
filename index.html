@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.6 | Advanced Research Architect</title>
+    <title>GamAI v10.7 | Advanced Research Architect</title>
 
     <style>
         /* Clean Blue and White Palette */
@@ -191,38 +191,38 @@
 <div class="container">
     <div class="header">
         <h1>GamAI Research Architect</h1>
-        <p>Polished Frameworks for Social Science, Education, and Business</p>
+        <p>Adaptive Frameworks for Quantitative, Qualitative, & Mixed-Methods</p>
     </div>
 
     <div class="content">
-        <div class="section-title">I. Study Parameters (Variables)</div>
+        <div class="section-title">I. Study Parameters (Variables & Concepts)</div>
         <div class="grid">
             
             <div class="input-box" id="iv-container">
-                <label>Independent Variables (IV) & Their Indicators</label>
+                <label>Set 1 Variables (e.g., Independent, Contextual, or Core Phenomenon)</label>
                 <div class="variable-group">
-                    <input type="text" class="iv-name" placeholder="IV Name (e.g., Financial Literacy)">
-                    <input type="text" class="iv-indicators" placeholder="Sub-variables (e.g., Budgeting, Saving)">
+                    <input type="text" class="iv-name" placeholder="Name (e.g., Financial Literacy, Lived Experiences)">
+                    <input type="text" class="iv-indicators" placeholder="Sub-indicators or Themes (comma separated)">
                 </div>
             </div>
-            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('iv-container', 'iv')">➕ Add Another IV</button>
+            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('iv-container', 'iv')">➕ Add Another Variable Set 1</button>
 
             <div class="input-box" id="dv-container" style="margin-top: 15px;">
-                <label>Dependent Variables (DV) & Their Indicators</label>
+                <label>Set 2 Variables (e.g., Dependent, Outcomes, or Specific Effects)</label>
                 <div class="variable-group">
-                    <input type="text" class="dv-name" placeholder="DV Name (e.g., Investment Behavior)">
-                    <input type="text" class="dv-indicators" placeholder="Sub-variables (e.g., Risk Tolerance, Diversification)">
+                    <input type="text" class="dv-name" placeholder="Name (e.g., Investment Behavior, Coping Mechanisms)">
+                    <input type="text" class="dv-indicators" placeholder="Sub-indicators or Themes (comma separated)">
                 </div>
             </div>
-            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('dv-container', 'dv')">➕ Add Another DV</button>
+            <button type="button" class="icon-btn add-btn" onclick="addVariableGroup('dv-container', 'dv')">➕ Add Another Variable Set 2</button>
 
         </div>
 
         <div class="section-title">II. Contextual Design</div>
         <div class="grid-2">
             <div class="input-box">
-                <label>Target Respondents</label>
-                <input type="text" id="respondents" placeholder="e.g., Public School Teachers">
+                <label>Target Respondents/Participants</label>
+                <input type="text" id="respondents" placeholder="e.g., Public School Teachers, Out-of-School Youth">
             </div>
             <div class="input-box">
                 <label>Research Locale</label>
@@ -230,12 +230,12 @@
             </div>
             <div class="input-box full">
                 <label>Brief Study Goal</label>
-                <textarea id="goal" rows="3" placeholder="Explain what you want to find out in 1-2 sentences..."></textarea>
+                <textarea id="goal" rows="3" placeholder="Explain what you want to find out in 1-2 sentences. The AI will adapt the Research Design based on this goal..."></textarea>
             </div>
         </div>
 
-        <button onclick="generateResearch()" id="genBtn" class="generate-btn">Generate Research Plan</button>
-        <div id="loading" class="loading">⚙️ Analyzing variables, structuring mixed-methods questions, and drafting methodology...</div>
+        <button onclick="generateResearch()" id="genBtn" class="generate-btn">Generate Adaptive Research Plan</button>
+        <div id="loading" class="loading">⚙️ Analyzing goal, determining optimal research design, and drafting frameworks...</div>
 
         <div class="export-controls" id="export-controls">
             <button class="btn-export btn-word" onclick="exportTable()">📄 Export Formatted Word Document (.doc)</button>
@@ -272,8 +272,8 @@ function addVariableGroup(containerId, type) {
     const newRow = document.createElement('div');
     newRow.className = 'variable-group';
     newRow.innerHTML = `
-        <input type="text" class="${type}-name" placeholder="${type.toUpperCase()} Name">
-        <input type="text" class="${type}-indicators" placeholder="Sub-variables (comma separated)">
+        <input type="text" class="${type}-name" placeholder="Variable/Concept Name">
+        <input type="text" class="${type}-indicators" placeholder="Sub-indicators or Themes (comma separated)">
         <button type="button" class="icon-btn remove-btn" onclick="this.parentElement.remove()">-</button>
     `;
     container.appendChild(newRow);
@@ -289,16 +289,16 @@ function extractVariables(type) {
         const nameVal = names[i].value.trim();
         const indVal = indicators[i].value.trim();
         if(nameVal !== '') {
-            result.push(`Variable Name: ${nameVal} | Sub-variables/Indicators: ${indVal || 'None specified'}`);
+            result.push(`Concept/Variable: ${nameVal} | Sub-indicators/Themes: ${indVal || 'Not specifically defined'}`);
         }
     }
     return result.join('\n');
 }
 
 function getHistoryTitle() {
-    const firstIV = document.querySelector('.iv-name').value.trim() || 'IV';
-    const firstDV = document.querySelector('.dv-name').value.trim() || 'DV';
-    return `${firstIV} vs ${firstDV}`;
+    const firstIV = document.querySelector('.iv-name').value.trim() || 'Variable 1';
+    const firstDV = document.querySelector('.dv-name').value.trim() || 'Variable 2';
+    return `${firstIV} x ${firstDV}`;
 }
 
 // --- Core Generation Logic ---
@@ -316,8 +316,8 @@ async function generateResearch() {
     const locale = document.getElementById('locale').value;
     const goal = document.getElementById('goal').value;
 
-    if(!ivData || !dvData) {
-        alert("Please provide at least one Independent and one Dependent Variable.");
+    if(!ivData && !dvData) {
+        alert("Please provide at least one core variable or concept to explore.");
         return;
     }
     
@@ -328,27 +328,27 @@ async function generateResearch() {
 
     const promptText = `Act as an Expert Academic Consultant. The current year is 2026. All references MUST be strictly between 2021 and 2026.
     
-    Here is the exact setup of the variables:
-    INDEPENDENT VARIABLES (IVs):
+    Here is the exact setup of the research parameters:
+    VARIABLE SET 1:
     ${ivData}
 
-    DEPENDENT VARIABLES (DVs):
+    VARIABLE SET 2:
     ${dvData}
 
-    Respondents: ${respondents}
+    Respondents/Participants: ${respondents}
     Locale: ${locale}
     Goal: ${goal}
 
     CRITICAL FORMATTING AND CONTENT INSTRUCTIONS:
     - Provide the output in STRICT JSON format with EXACTLY 5 keys.
     - Inside the JSON string values, you MUST use heavy HTML formatting to ensure proper spacing. Wrap distinct concepts in <p> tags, use <ul> and <li> for lists, and <br> for line breaks. Ensure ONE ITEM PER LINE so they do not look crowded.
-    - DYNAMIC PHRASING: Vary your sentence structures and verbs across the text (e.g., use explore, examine, evaluate, investigate, assess, uncover).
+    - ADAPTIVE DESIGN: Read the "Goal" carefully. Choose the most appropriate Research Design (e.g., Experimental, Descriptive, Correlational, Phenomenological, Case Study, or Mixed-Methods). Tailor all wording, questions, and procedures to perfectly fit that specific design. DO NOT use a rigid template.
 
     JSON KEYS REQUIRED:
     1. "3 Proposed Titles": Provide three strong, academic titles. Format as an ordered HTML list (<ol><li>...</li></ol>).
     2. "Rationale": Include local and foreign literature, reason to conduct the study, and expected outcomes. Separate these parts clearly using <p> tags.
-    3. "Research Questions": Start with a <p> General Statement. Then use an ordered list. Create a SEPARATE numbered question to describe EACH IV and EACH DV using their sub-bullets (e.g., 1.1, 1.2) on their own lines. Include questions for significant relationship/difference. Include at least ONE Qualitative research question. End with a final question proposing an output/action plan.
-    4. "Methodology": Include Research Design and Detailed Procedures (Phase 1, Phase 2, etc.) wrapped in <p> tags. List the specific statistical tool PER QUANTITATIVE RESEARCH QUESTION. Put each RQ statistic on its own line using <p> or <ul>. Provide step-by-step instructions on how to run these specific tests in Jamovi from encoding to analysis.
+    3. "Research Questions": Start with a <p> General Statement outlining the main objective. Then use an ordered HTML list for the Specific Questions. The specific questions must be dynamically generated based on the chosen Research Design and Goal. Do not force a specific template style; let the questions flow naturally from the variables and the intent of the study. End with a final question proposing a relevant output, intervention, or action plan.
+    4. "Methodology": State the specific Research Design chosen and justify why it fits the Goal. Include Detailed Procedures (Phase 1, Phase 2, etc.) wrapped in <p> tags. For Data Analysis: If quantitative or mixed methods, list the specific statistical tool PER RESEARCH QUESTION and provide step-by-step instructions on how to run them in Jamovi. If purely qualitative, detail the specific qualitative data analysis steps (e.g., Braun & Clarke's Thematic Analysis).
     5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026). **CRITICAL INSTRUCTION:** ONLY provide references that have a valid, accessible URL or DOI link. You must include the URL or DOI at the end of every citation. Make the links clickable by wrapping them in HTML <a> tags. Format each reference using <p> tags.
     
     IMPORTANT: Return ONLY a valid JSON object. Do not include markdown like \`\`\`json.`;
@@ -398,17 +398,15 @@ function renderTable(dataObj) {
     }
     
     document.getElementById('output-area').style.display = "block";
-    document.getElementById('export-controls').style.display = "block"; // Show Word button
+    document.getElementById('export-controls').style.display = "block"; 
 }
 
 // --- Polished Export Function (Word Only) ---
 function exportTable() {
     const originalTable = document.getElementById("research-table");
     
-    // Create a pristine, un-styled clone for formatting
     const cloneTable = originalTable.cloneNode(true);
     
-    // Inject strictly formatted Microsoft Word CSS and Title Header
     const header = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head>
@@ -426,7 +424,7 @@ function exportTable() {
             </style>
         </head>
         <body>
-            <h1>Research Plan</h1>
+            <h1>Adaptive Research Plan</h1>
     `;
     const footer = "</body></html>";
     const html = header + cloneTable.outerHTML + footer;
