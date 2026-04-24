@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamAI v10.0 | Advanced Research Architect</title>
+    <title>GamAI v10.1 | Advanced Research Architect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -144,6 +144,10 @@ async function generateResearch() {
 
     const iv = document.getElementById('iv').value;
     const dv = document.getElementById('dv').value;
+    const ivSub = document.getElementById('ivSub').value;
+    const dvSub = document.getElementById('dvSub').value;
+    const respondents = document.getElementById('respondents').value;
+    const locale = document.getElementById('locale').value;
     
     // UI states
     document.getElementById('loading').style.display = "block";
@@ -154,21 +158,24 @@ async function generateResearch() {
     const promptText = `Act as an Expert Academic Consultant.
     The current year is 2026. All references MUST be strictly between 2021 and 2026.
     
-    IV: ${iv} (Indicators: ${document.getElementById('ivSub').value})
-    DV: ${dv} (Indicators: ${document.getElementById('dvSub').value})
-    Respondents: ${document.getElementById('respondents').value}
-    Locale: ${document.getElementById('locale').value}
+    IV: ${iv} (Indicators: ${ivSub})
+    DV: ${dv} (Indicators: ${dvSub})
+    Respondents: ${respondents}
+    Locale: ${locale}
     Goal: ${document.getElementById('goal').value}
 
     Provide the output in STRICT JSON format with EXACTLY the following 5 keys. Format the string values with basic HTML (like <br>, <strong>, <ul>) for readability:
-    1. "3 Proposed Titles"
+    1. "3 Proposed Titles": Provide three strong, academic titles.
     2. "Rationale": Include local and foreign literature, the reason it is a must to conduct the study, and expected outcomes.
-    3. "Research Questions": Specific, numbered questions.
-    4. "Methodology": Include Research Design, Procedures, and Statistical Tools. **CRITICAL:** Aside from discussing the tests, provide step-by-step instructions on how to run them in Jamovi (from encoding data to analysis).
+    3. "Research Questions": MUST follow this strict format:
+       Start with a General Statement describing the study's overall purpose, variables, respondents, and locale (e.g., "This study determines the relationship between..."). Follow with "Specifically, it seeks answers to the following questions:". 
+       Create numbered specific questions. For questions asking to describe the IV and DV, use sub-bullets (e.g., 1.1, 1.2) populated by the specific indicators provided (${ivSub} and ${dvSub}). Include questions for significant relationship/difference and an output (e.g., action plan or framework).
+    4. "Methodology": Include Research Design and Procedures. 
+       **CRITICAL for Statistical Tools:** You MUST list the specific statistical tool PER RESEARCH QUESTION (e.g., "<strong>RQ1:</strong> Mean and Standard Deviation. <strong>RQ2:</strong> Pearson r"). Afterward, provide step-by-step instructions on how to run these specific tests in Jamovi.
     5. "References": APA 7th format. Strictly 5 years backward from 2026 (2021-2026).`;
 
     try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`;
+        const url = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=\${apiKey}\`;
         
         const response = await fetch(url, {
             method: "POST",
@@ -184,7 +191,7 @@ async function generateResearch() {
 
         const aiResponseJSON = JSON.parse(data.candidates[0].content.parts[0].text);
         renderTable(aiResponseJSON);
-        saveToHistory(`${iv} vs ${dv}`, aiResponseJSON);
+        saveToHistory(\`\${iv} vs \${dv}\`, aiResponseJSON);
 
     } catch (err) {
         alert("Error generating research: " + err.message);
@@ -200,10 +207,10 @@ function renderTable(dataObj) {
     tbody.innerHTML = ""; // Clear old
 
     for (const [task, answer] of Object.entries(dataObj)) {
-        const row = `<tr>
-            <td>${task}</td>
-            <td>${answer}</td>
-        </tr>`;
+        const row = \`<tr>
+            <td>\${task}</td>
+            <td>\${answer}</td>
+        </tr>\`;
         tbody.innerHTML += row;
     }
     
@@ -230,12 +237,11 @@ function exportTable(type) {
         html2pdf().set(opt).from(table).save();
     }
     else if (type === 'word') {
-        // Create a blob containing the HTML table to export as Word
         const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
         const footer = "</body></html>";
         const html = header + table.outerHTML + footer;
         
-        const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+        const blob = new Blob(['\\ufeff', html], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -250,7 +256,6 @@ function exportTable(type) {
 function saveToHistory(title, jsonData) {
     let history = JSON.parse(localStorage.getItem("gamai_history")) || [];
     
-    // Add new item to the beginning
     const newItem = {
         id: Date.now(),
         title: title || "Untitled Study",
@@ -259,8 +264,6 @@ function saveToHistory(title, jsonData) {
     };
     
     history.unshift(newItem);
-    
-    // Keep only the last 5
     if (history.length > 5) history.pop();
     
     localStorage.setItem("gamai_history", JSON.stringify(history));
@@ -280,7 +283,7 @@ function loadHistory() {
     history.forEach(item => {
         const div = document.createElement('div');
         div.className = 'history-item';
-        div.innerHTML = `<strong>${item.title}</strong><br><small style="color:#666;">${item.date}</small>`;
+        div.innerHTML = \`<strong>\${item.title}</strong><br><small style="color:#666;">\${item.date}</small>\`;
         div.onclick = () => renderTable(item.data);
         list.appendChild(div);
     });
